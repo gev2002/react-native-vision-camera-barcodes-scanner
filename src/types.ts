@@ -9,18 +9,18 @@ export type { ForwardedRef } from 'react';
 
 type BarCodeType = Readonly<{
   aztec: string;
-  code128: string;
-  code39: string;
-  code39mod43: string;
-  code93: string;
-  ean13: string;
-  ean8: string;
-  pdf417: string;
+  code_128: string;
+  code_39: string;
+  code_93: string;
+  codabar: string;
+  ean_13: string;
+  ean_8: string;
+  pdf_417: string;
   qr: string;
   upc_e: string;
-  interleaved2of5: string;
-  itf14: string;
-  datamatrix: string;
+  upc_a: string;
+  itf: string;
+  data_matrix: string;
   all: string;
 }>;
 
