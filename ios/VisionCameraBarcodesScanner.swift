@@ -86,7 +86,6 @@ public class VisionCameraBarcodesScanner: FrameProcessorPlugin {
               for barcode in barcodes {
                   print(barcode , "barcccccc")
                   var objData : [String:Any] = [:]
-                  let corners = barcode.cornerPoints
                       objData["height"] = barcode.frame.height
                       objData["width"] = barcode.frame.width
                       objData["top"] = barcode.frame.minY
