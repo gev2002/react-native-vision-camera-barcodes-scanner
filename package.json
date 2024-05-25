@@ -1,6 +1,6 @@
 {
   "name": "react-native-vision-camera-barcodes-scanner",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A plugin to scan barcodes using ML Kit Barcode Scanning",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
