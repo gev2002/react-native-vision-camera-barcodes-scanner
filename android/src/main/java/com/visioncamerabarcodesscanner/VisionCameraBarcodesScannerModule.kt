@@ -82,6 +82,9 @@ class VisionCameraBarcodesScannerModule(
                 }
                 val rawValue = barcode.rawValue
                 map.putString("rawValue", rawValue)
+                val displayValue = barcode.displayValue;
+                map.putString("displayValue", displayValue);
+
                 val valueType = barcode.valueType
                 when (valueType) {
                     Barcode.TYPE_WIFI -> {
