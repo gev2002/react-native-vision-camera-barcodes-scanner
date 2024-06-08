@@ -92,6 +92,7 @@ public class VisionCameraBarcodesScanner: FrameProcessorPlugin {
                       objData["left"] = barcode.frame.minX
                       objData["right"] = barcode.frame.maxX
                       let displayValue = barcode.displayValue
+                      objData["displayValue"] = displayValue
                       let rawValue = barcode.rawValue
                       objData["rawValue"] = rawValue
 
