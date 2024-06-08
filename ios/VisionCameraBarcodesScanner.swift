@@ -84,14 +84,13 @@ public class VisionCameraBarcodesScanner: FrameProcessorPlugin {
               }
               guard error == nil, let barcodes = barcodes else { return }
               for barcode in barcodes {
-                  print(barcode , "barcccccc")
                   var objData : [String:Any] = [:]
                       objData["height"] = barcode.frame.height
                       objData["width"] = barcode.frame.width
                       objData["top"] = barcode.frame.minY
                       objData["bottom"] = barcode.frame.maxY
                       objData["left"] = barcode.frame.minX
-                      objData["right"] = barcode.frame.maxY
+                      objData["right"] = barcode.frame.maxX
                       let displayValue = barcode.displayValue
                       let rawValue = barcode.rawValue
                       objData["rawValue"] = rawValue
