@@ -111,7 +111,7 @@ public class VisionCameraBarcodesScanner: FrameProcessorPlugin {
                           let url = barcode.url!.url
                           objData["url"] = url
                       default:
-                          print("value case")
+                          break
 
                       }
                   data.append(objData)

@@ -6,7 +6,7 @@ import type {
   Frame,
   ScanBarcodeOptions,
   BarcodeScannerPlugin,
-  Barcode,
+  BarcodeData,
 } from './types';
 import { Platform } from 'react-native';
 
@@ -27,9 +27,9 @@ export function createBarcodeScannerPlugin(
     throw new Error(LINKING_ERROR);
   }
   return {
-    scanBarcodes: (frame: Frame): Barcode => {
+    scanBarcodes: (frame: Frame): BarcodeData => {
       'worklet';
-      return plugin.call(frame) as unknown as Barcode;
+      return plugin.call(frame) as unknown as BarcodeData;
     },
   };
 }
