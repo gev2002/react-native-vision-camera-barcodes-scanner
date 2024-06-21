@@ -34,6 +34,7 @@ export type Barcode = {
   right: number;
   top: number;
   width: number;
+  displayValue: string;
 };
 
 export type BarcodeData = {
@@ -46,5 +47,5 @@ export type CameraTypes = {
 } & CameraProps;
 
 export type BarcodeScannerPlugin = {
-  scanBarcodes: (frame: Frame) => Barcode;
+  scanBarcodes: (frame: Frame) => BarcodeData;
 };
