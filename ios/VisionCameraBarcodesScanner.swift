@@ -63,8 +63,7 @@ public class VisionCameraBarcodesScanner: FrameProcessorPlugin {
             barcodesOptions = BarcodeScannerOptions(formats: concatenatedFormats)
         }
     }
-    
-    
+
     public override func callback(
         _ frame: Frame,
         withArguments arguments: [AnyHashable: Any]?
@@ -72,11 +71,11 @@ public class VisionCameraBarcodesScanner: FrameProcessorPlugin {
         var data:[Any] = []
         let buffer = frame.buffer
         let image = VisionImage(buffer: buffer);
-        image.orientation = getOrientation(orientation: frame.orientation)
+
         let barcodeScanner = BarcodeScanner.barcodeScanner(options: barcodesOptions)
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
-        
+
         barcodeScanner.process(image) { barcodes, error in
             defer {
                 dispatchGroup.leave()
@@ -84,18 +83,46 @@ public class VisionCameraBarcodesScanner: FrameProcessorPlugin {
             guard error == nil, let barcodes = barcodes else { return }
             for barcode in barcodes {
                 var objData : [String:Any] = [:]
-                objData["height"] = barcode.frame.height
-                objData["width"] = barcode.frame.width
-                objData["top"] = barcode.frame.minY
-                objData["bottom"] = barcode.frame.maxY
-                objData["left"] = barcode.frame.minX
-                objData["right"] = barcode.frame.maxX
-                
+                if(frame.orientation == .left) {
+                    print("left");
+                    // Rotate 90 degrees to the right
+                    objData["height"] = barcode.frame.width
+                    objData["width"] = barcode.frame.height
+                    objData["left"] = CGFloat(frame.height) - barcode.frame.maxY
+                    objData["right"] = CGFloat(frame.height) - barcode.frame.minY
+                    objData["top"] = barcode.frame.minX
+                    objData["bottom"] = barcode.frame.maxX
+                } else if (frame.orientation == .right) {
+                    // Rotate 90 degrees to the left
+                    objData["height"] = barcode.frame.width
+                    objData["width"] = barcode.frame.height
+                    objData["left"] = barcode.frame.minY
+                    objData["right"] = barcode.frame.maxY
+                    objData["top"] = CGFloat(frame.width) - barcode.frame.maxX
+                    objData["bottom"] = CGFloat(frame.width) - barcode.frame.minX
+                } else if (frame.orientation == .up) {
+                    // Do nothing
+                    objData["width"] = barcode.frame.width
+                    objData["height"] = barcode.frame.height
+                    objData["left"] = barcode.frame.minX
+                    objData["right"] = barcode.frame.maxX
+                    objData["top"] = barcode.frame.minY
+                    objData["bottom"] = barcode.frame.maxY
+                } else if (frame.orientation == .down) {
+                    // Reverse everything
+                    objData["width"] = barcode.frame.width
+                    objData["height"] = barcode.frame.height
+                    objData["left"] = CGFloat(frame.width) - barcode.frame.maxX
+                    objData["right"] = CGFloat(frame.width) - barcode.frame.minX
+                    objData["top"] = CGFloat(frame.height) - barcode.frame.maxY
+                    objData["bottom"] = CGFloat(frame.height) - barcode.frame.minY
+                }
+
                 let displayValue = barcode.displayValue
                 objData["displayValue"] = displayValue
                 let rawValue = barcode.rawValue
                 objData["rawValue"] = rawValue
-                
+
                 let valueType = barcode.valueType
                 switch valueType {
                 case .wiFi:
@@ -112,28 +139,12 @@ public class VisionCameraBarcodesScanner: FrameProcessorPlugin {
                     objData["url"] = url
                 default:
                     print("value case")
+
                 }
                 data.append(objData)
             }
         }
         dispatchGroup.wait()
         return data
-    }
-    
-    private func getOrientation(
-        orientation: UIImage.Orientation
-    ) -> UIImage.Orientation {
-        switch orientation {
-        case .right, .leftMirrored:
-            return .up
-        case .left, .rightMirrored:
-            return .down
-        case .up, .downMirrored:
-            return .left
-        case .down, .upMirrored:
-            return .right
-        default:
-            return .up
-        }
     }
 }
