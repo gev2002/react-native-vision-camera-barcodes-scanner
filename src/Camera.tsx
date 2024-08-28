@@ -19,11 +19,11 @@ export const Camera = forwardRef(function Camera(
   props: CameraTypes,
   ref: ForwardedRef<any>
 ) {
-  const { device, callback, options = {}, ...p } = props;
+  const { device, callback, options, ...p } = props;
   // @ts-ignore
   const { scanBarcodes } = useBarcodeScanner(options);
   const useWorklets = useRunOnJS(
-    (data: Barcode): void => {
+    (data: Barcode[]): void => {
       callback(data);
     },
     [options]
@@ -31,8 +31,7 @@ export const Camera = forwardRef(function Camera(
   const frameProcessor: ReadonlyFrameProcessor = useFrameProcessor(
     (frame: Frame) => {
       'worklet';
-      const data: Barcode = scanBarcodes(frame);
-      // @ts-ignore
+      const data: Barcode[] = scanBarcodes(frame);
       // eslint-disable-next-line react-hooks/rules-of-hooks
       useWorklets(data);
     },
@@ -56,8 +55,5 @@ export const Camera = forwardRef(function Camera(
 export function useBarcodeScanner(
   options?: ScanBarcodeOptions
 ): BarcodeScannerPlugin {
-  return useMemo(
-    () => createBarcodeScannerPlugin(options || ['all']),
-    [options]
-  );
+  return useMemo(() => createBarcodeScannerPlugin(options), [options]);
 }

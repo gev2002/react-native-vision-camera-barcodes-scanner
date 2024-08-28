@@ -2,8 +2,8 @@ A plugin to scan barcodes using ML Kit Barcode Scanning
 
 # 🚨 Required Modules
 
-react-native-vision-camera => 4.0.0 <br />
-react-native-worklets-core = 1.3.0
+react-native-vision-camera => 4.5.2 <br />
+react-native-worklets-core = 1.3.3
 
 ## 💻 Installation
 
@@ -17,7 +17,7 @@ yarn add react-native-vision-camera-barcodes-scanner
     Works With React Native Vision Camera.
     Works for Both Cameras.
     Works Fast.
-    Works With Android 🤖 and IOS.📱
+    Works With Android 🤖 and iOS .
     Writen With Kotlin and Swift.
 
 ## 💡 Usage
@@ -39,7 +39,7 @@ function App (){
           device={device}
           isActive
           // optional
-          options={["qr"]}
+          options={["qr","data_matrix"]}
           callback={(d) => setData(d)}
         />
       )}
@@ -62,7 +62,7 @@ import { useBarcodeScanner } from "react-native-vision-camera-barcodes-scanner";
 
 function App() {
   const device = useCameraDevice('back');
-  const options = ["qr"]
+  const options = ["qr", "data_matrix"]
   const {scanBarcodes} = useBarcodeScanner(options)
   const frameProcessor = useFrameProcessor((frame) => {
     'worklet'
@@ -84,13 +84,34 @@ function App() {
 }
 export default App;
 ```
+##  Scan By Image 📸
+
+```js
+import { ImageScanner } from "react-native-vision-camera-barcodes-scanner";
+
+const result = await ImageScanner({
+    uri:assets.uri
+})
+console.log(result);
+
+```
+
+![Static Badge](https://img.shields.io/badge/-%25?style=&logo=typescript&color=rgba(0%2C0%2C0%2C0)) \
+Type **`Options`** = aztec, code_128, code_39, code_93, codabar, ean_13,
+ean_8, pdf_417, qr, upc_e, upc_a, itf, data_matrix, all
+
+|  Name   |   Type   | Values  | Required | Default |
+|:-------:|:--------:|:-------:|:--------:|:-------:|
+|   uri   |  string  | String  |   yes    |    -    |
+| options | string[] | Options |    no    |   all   |
+
 ---
 
 ## ⚙️ Options
 
-| Name |  Type    |  Values  | Default |
-| :---:   | :---: | :---: |  :---: |
-| codeType | String  | all, code-39, code-93, codabar, ean-13, ean-8, itf, upc-e, upc-a, qr, pdf-417, aztec, data-matrix, code-128 | all |
+|  Name   |   Type   | Values  | Default |
+|:-------:|:--------:|:-------:|:-------:|
+| options | string[] | Options |   all   |
 
 
 

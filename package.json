@@ -1,6 +1,6 @@
 {
   "name": "react-native-vision-camera-barcodes-scanner",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "A plugin to scan barcodes using ML Kit Barcode Scanning",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -69,8 +69,8 @@
     "react": "18.2.0",
     "react-native": "0.74.1",
     "react-native-builder-bob": "^0.20.0",
-    "react-native-vision-camera": "^4.0.1",
-    "react-native-worklets-core": "1.3.0",
+    "react-native-vision-camera": "^4.5.2",
+    "react-native-worklets-core": "1.3.3",
     "release-it": "^15.0.0",
     "turbo": "^1.10.7",
     "typescript": "^5.2.2"
@@ -85,7 +85,7 @@
   "workspaces": [
     "example"
   ],
-  "packageManager": "yarn@3.6.1",
+  "packageManager": "yarn@1.22.22",
   "jest": {
     "preset": "react-native",
     "modulePathIgnorePatterns": [

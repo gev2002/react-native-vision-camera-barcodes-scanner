@@ -21,3 +21,19 @@
   }];
 }
 @end
+
+
+@interface RCT_EXTERN_MODULE(ImageScanner, NSObject)
+
+RCT_EXTERN_METHOD(process:(NSString *)uri
+                  options:(nullable NSArray *)options
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
+
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
+@end

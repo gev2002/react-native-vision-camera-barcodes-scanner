@@ -8,18 +8,19 @@ import com.mrousavy.camera.frameprocessors.FrameProcessorPluginRegistry
 
 
 class VisionCameraBarcodesScannerPackage : ReactPackage {
-  companion object {
-    init {
-      FrameProcessorPluginRegistry.addFrameProcessorPlugin("scanBarcodes") {proxy,options ->
-        VisionCameraBarcodesScannerModule(proxy,options)
-      }
+    companion object {
+        init {
+            FrameProcessorPluginRegistry.addFrameProcessorPlugin("scanBarcodes") { proxy, options ->
+                VisionCameraBarcodesScannerModule(proxy, options)
+            }
+        }
     }
-  }
-  override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-    return emptyList()
-  }
 
-  override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
-    return emptyList()
-  }
+    override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
+        return listOf(ImageScanner(reactContext))
+    }
+
+    override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
+        return emptyList()
+    }
 }
