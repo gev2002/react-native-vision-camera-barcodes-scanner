@@ -35,6 +35,12 @@ export type Barcode = {
   right: number;
   top: number;
   width: number;
+  displayValue: string;
+  ssid?: string;
+  password?: string;
+  encryptionType?: number;
+  title?: string;
+  url?: string;
 };
 
 export type CameraTypes = {
