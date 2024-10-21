@@ -26,7 +26,7 @@ export const Camera = forwardRef(function Camera(
     (data: Barcode[]): void => {
       callback(data);
     },
-    [options]
+    [options, callback]
   );
   const frameProcessor: ReadonlyFrameProcessor = useFrameProcessor(
     (frame: Frame) => {
@@ -35,7 +35,7 @@ export const Camera = forwardRef(function Camera(
       // eslint-disable-next-line react-hooks/rules-of-hooks
       useWorklets(data);
     },
-    []
+    [useWorklets]
   );
   return (
     <>
