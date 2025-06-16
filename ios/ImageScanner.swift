@@ -5,54 +5,75 @@ import MLKitVision
 
 @objc(ImageScanner)
 class ImageScanner: NSObject {
-    
-    private var formats: [BarcodeFormat] = []
-    
+    private var scanner: BarcodeScanner = BarcodeScanner.barcodeScanner()
+    private var scannerBuilder: BarcodeScannerOptions = BarcodeScannerOptions(formats: .all)
+
     @objc(process:options:withResolver:withRejecter:)
-    private func process(uri: String,options:NSArray?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock){
-       var barcodesOptions = BarcodeScannerOptions(formats: .all)
+    private func process(
+        uri: String,
+        options: [AnyHashable: Any]! = [:],
+        resolve: @escaping RCTPromiseResolveBlock,
+        reject: @escaping RCTPromiseRejectBlock
+    ) {
+        let scannerBarcodeFormats = ScannerUtils.getOptionsBarcodeFormats(options: options)
+        let scannerRatio = ScannerUtils.getOptionsRatio(options: options)
+        let scannerOrientation = ScannerUtils.getOptionsOrientation(options: options)
+        let scannerViewSize = ScannerUtils.getOptionsViewSize(options: options)
 
-        if(options != nil){
-            options!.forEach { value in
-                if(value as? String == "code_128"){ formats.append(.code128) }
-                if(value as? String == "code_39"){ formats.append(.code39) }
-                if(value as? String == "code_93"){ formats.append(.code93) }
-                if(value as? String == "codabar"){ formats.append(.codaBar) }
-                if(value as? String == "ean_13"){ formats.append(.EAN13) }
-                if(value as? String == "ean_8"){ formats.append(.EAN8) }
-                if(value as? String == "itf"){ formats.append(.ITF) }
-                if(value as? String == "upc_e"){ formats.append(.UPCE) }
-                if(value as? String == "upc_a"){ formats.append(.UPCA) }
-                if(value as? String == "qr"){ formats.append(.qrCode) }
-                if(value as? String == "pdf_417"){ formats.append(.PDF417) }
-                if(value as? String == "aztec"){ formats.append(.aztec)}
-                if(value as? String == "data_matrix"){ formats.append(.dataMatrix) }
-                if(value as? String == "all"){ formats.append(.all)} }
-            let concatenatedFormats = BarcodeFormat(formats)
-            barcodesOptions = BarcodeScannerOptions(formats: concatenatedFormats)
+        let barcodeFormats = ScannerUtils.getSafeBarcodeFormats(formats: scannerBarcodeFormats)
+        if barcodeFormats.contains(.all) {
+            scannerBuilder = BarcodeScannerOptions(formats: .all)
+        } else {
+            scannerBuilder = BarcodeScannerOptions(formats: BarcodeFormat(barcodeFormats))
         }
-        
-        let barcodeScanner = BarcodeScanner.barcodeScanner(options: barcodesOptions)
 
-        let image =  UIImage(contentsOfFile: uri)
-        var data:[Any] = []
-        if image != nil {
-            do {
-                let visionImage = VisionImage(image: image!)
-                let result = try barcodeScanner.results(in: visionImage)
-                for barcode in result {
-                    let objData = VisionCameraBarcodesScanner.processData(barcode: barcode)
-                    data.append(objData)
-                }
-                resolve(data)
-                
-            }catch{
-                reject("Error","Processing Image",nil)
+        scanner = BarcodeScanner.barcodeScanner(options: scannerBuilder)
+
+        var array: [Any] = []
+
+        guard let imageUI = UIImage(contentsOfFile: uri) else {
+            reject("Error", "Can't find photo.", nil)
+            return
+        }
+
+        guard let imageCG = imageUI.cgImage else {
+            reject("Error", "Couldn't get CGImage from UIImage.", nil)
+            return
+        }
+
+        let image = VisionImage(image: imageUI)
+        image.orientation = imageUI.imageOrientation
+        let imageSize = Size(width: imageCG.width, height: imageCG.height)
+        let viewSize = ScannerUtils.getSafeViewSize(imageSize: imageSize, viewSize: scannerViewSize)
+
+        do {
+            let barcodes = try scanner.results(in: image)
+            let barcodesFiltered: [Barcode]
+            if scannerRatio.width != 1.0 || scannerRatio.height != 1.0 {
+                barcodesFiltered = ScannerUtils.filterBarcodes(
+                    barcodes: barcodes,
+                    imageSize: imageSize,
+                    viewSize: viewSize,
+                    ratio: scannerRatio,
+                    imageRotation: image.orientation
+                )
+            } else {
+                barcodesFiltered = barcodes
             }
-        }else{
-            reject("Error","Can't Find Photo",nil)
+
+            for barcode in barcodesFiltered {
+                let map = ScannerUtils.formatBarcode(
+                    barcode: barcode,
+                    imageSize: imageSize,
+                    viewSize: viewSize,
+                    orientation: scannerOrientation,
+                    imageRotation: image.orientation
+                )
+                array.append(map)
+            }
+            resolve(array)
+        } catch {
+            reject("Error", "Image processing failed.", nil)
         }
-        
     }
 }
-

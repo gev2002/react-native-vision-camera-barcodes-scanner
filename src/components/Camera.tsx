@@ -1,33 +1,33 @@
-import React, { forwardRef, useMemo } from 'react';
+import React, { forwardRef } from 'react';
 import {
-  Camera as VisionCamera,
+  Camera as CameraVision,
   useFrameProcessor,
 } from 'react-native-vision-camera';
-import { createBarcodeScannerPlugin } from './scanBarcodes';
-import type {
-  ReadonlyFrameProcessor,
-  Frame,
-  CameraTypes,
-  ForwardedRef,
-  Barcode,
-  BarcodeScannerPlugin,
-  ScanBarcodeOptions,
-} from './types';
 import { useRunOnJS } from 'react-native-worklets-core';
+import { useBarcodeScanner } from '../hooks/useBarcodeScanner';
+import type {
+  Barcode,
+  CameraProps,
+  Frame,
+  ForwardedRef,
+  ReadonlyFrameProcessor,
+} from '../types';
 
 export const Camera = forwardRef(function Camera(
-  props: CameraTypes,
+  props: CameraProps,
   ref: ForwardedRef<any>
 ) {
   const { device, callback, options, ...p } = props;
-  // @ts-ignore
+
   const { scanBarcodes } = useBarcodeScanner(options);
+
   const useWorklets = useRunOnJS(
     (data: Barcode[]): void => {
       callback(data);
     },
     [options]
   );
+
   const frameProcessor: ReadonlyFrameProcessor = useFrameProcessor(
     (frame: Frame) => {
       'worklet';
@@ -37,10 +37,11 @@ export const Camera = forwardRef(function Camera(
     },
     []
   );
+
   return (
     <>
       {!!device && (
-        <VisionCamera
+        <CameraVision
           pixelFormat="yuv"
           ref={ref}
           frameProcessor={frameProcessor}
@@ -51,9 +52,3 @@ export const Camera = forwardRef(function Camera(
     </>
   );
 });
-
-export function useBarcodeScanner(
-  options?: ScanBarcodeOptions
-): BarcodeScannerPlugin {
-  return useMemo(() => createBarcodeScannerPlugin(options), [options]);
-}
